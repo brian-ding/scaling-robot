@@ -33,9 +33,7 @@ def get_pr_info(repo, pr_number, github_token):
 
     last_commit = pullRequest.get_commits()[pullRequest.commits - 1]
 
-    pullRequest.create_review_comment(
-        "This is a new add comment", last_commit, "README.md", 1
-    )
+    pullRequest.create_issue_comment("This is a summary comment")
 
     return pr_info
 

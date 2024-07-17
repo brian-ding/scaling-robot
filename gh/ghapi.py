@@ -1,7 +1,4 @@
-from github import Auth
 from github import Github
-from github import GithubIntegration
-
 
 # # 设置你的GitHub Access Token，并确保它有足够的权限
 # # 你可以在这里创建一个新的Token：https://github.com/settings/tokens
@@ -46,9 +43,7 @@ def get_pr_info(repo, pr_number, github_token):
 # 登录GitHub
 def github_login(github_token, repo):
 
-    github_Auth = Auth.Token(github_token)
-    githubHandler = Github(auth=github_Auth)
-    githubHandler.get_user().login
+    githubHandler = Github(github_token)
     repoHandler = githubHandler.get_repo(repo)
 
     return repoHandler

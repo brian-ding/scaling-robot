@@ -1,0 +1,63 @@
+# Ignore all .pyc files and __pycache__ directories everywhere in the project
+*.pyc
+__pycache__/
+
+# Ignore Python virtual environment
+venv/
+env/
+.python-version
+
+# Ignore temporary files from editors
+# Emacs
+.*.swp
+# Vim
+*.swo
+*.swn
+# Atom
+.atom/
+# Sublime Text
+.project
+.sublime-workspace
+# Visual Studio Code
+.vscode/
+# PyCharm
+*.idea/
+*.iml
+out/
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
+
+# Ignore data files that might be generated
+data/
+dataset/
+downloads/
+output/
+
+# Ignore log files
+log/
+logs/
+*.log
+
+# Ignore configuration files that might contain sensitive information
+config.py
+settings.py
+secrets.py
+
+# Ignore files that are typically used for testing
+.coverage
+.coverage.*
+.cache
+htmlcov/
+.nosetests
+.tox/
+.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/

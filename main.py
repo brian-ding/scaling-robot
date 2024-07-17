@@ -1,5 +1,5 @@
 import click
-from gh import get_pr_info
+from gh.ghapi import get_pr_info
 
 @click.group()
 def cli():

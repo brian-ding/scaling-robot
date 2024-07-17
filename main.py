@@ -1,5 +1,5 @@
 import click
-from .github.gh import get_pr_info
+from gh import get_pr_info
 
 @click.group()
 def cli():

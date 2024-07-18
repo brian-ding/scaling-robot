@@ -24,6 +24,7 @@ def review(repo_name,pr_num,token):
     """Review a PR"""
     click.echo(f"Review {repo_name}/{pr_num}/{token}")
     # Get the PR code files
+    # url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files"
     pr_files = get_pr_files(repo_name,pr_num,token)
     for pr_file in pr_files:
         filename = pr_file['filename']
@@ -33,7 +34,8 @@ def review(repo_name,pr_num,token):
             review_response = review_pr_code(chunk)
             comment = f"**Review for {filename} (chunk):**\n\n{review_response}"
             click.echo(comment)
-            comment_on_pr(repo_name, pr_num, comment, token)
+            # TBD Comment on the line code
+            # comment_on_pr(repo_name, pr_num, comment, token)
 
 
 def split_code_into_chunks(code, chunk_size=500):

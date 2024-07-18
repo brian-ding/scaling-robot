@@ -1,4 +1,5 @@
 from github import Github
+from github import Auth
 
 # # 设置你的GitHub Access Token，并确保它有足够的权限
 # # 你可以在这里创建一个新的Token：https://github.com/settings/tokens
@@ -47,12 +48,26 @@ def github_login(github_token, repo):
     return repoHandler
 
 
+# 登录GitHub
+def github_user_login(github_user_token, repo):
+
+    github_Auth = Auth.Token(github_user_token)
+    githubHandler = Github(auth=github_Auth)
+    githubHandler = Github(github_user_token)
+    repoHandler = githubHandler.get_repo(repo)
+    return repoHandler
+
+
+
 def get_pr_files(repo, pr_number, github_token):
     return ""
 
 
-def comment_on_pr(repo, pr_number, comments, github_token):
-    return ""
+def comment_on_pr(repo, pr_number, github_token,comments):
+    repoHandler = github_login(github_token, repo)
+    pullRequest = repoHandler.get_pull(pr_number)
+    pullRequest.create_issue_comment(comments)
+    return "comment success."
 
 
 # Pull Request 基本信息的定义

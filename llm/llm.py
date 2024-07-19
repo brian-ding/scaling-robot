@@ -22,7 +22,7 @@ def summarize_pr_info(info) -> str:
     return f"PR summary result: {result}"
 
 def _generate_summary_messages(info: PRInfo) -> List[Message]:
-    message = Message(Role.USER, f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}")
+    message = Message(Role.user, f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}")
     return [message]
 
 def review_pr_code(code):

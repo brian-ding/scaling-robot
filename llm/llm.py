@@ -44,7 +44,7 @@ def _ask(messages: List[Message]) -> str:
     Ask llm a question and return an answer.
 
     Parameters:
-    prompt (string): The question to ask.
+    messages (List[Message]): The chat history including the new question.
 
     Returns:
     str: An answer from the llm.

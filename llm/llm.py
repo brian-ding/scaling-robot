@@ -5,7 +5,7 @@ from typing import List
 from gh.pr_info import PRInfo
 from ._message import Message, Role
 
-def summary_pr_info(info):
+def summarize_pr_info(info) -> str:
     """
     Synnart the PR information and return a string.
 
@@ -16,7 +16,10 @@ def summary_pr_info(info):
     str: A result string after summarizing the PR info.
     """
 
-    return f"PR summary result: {info.title} by {info.author}"
+    messages = _generate_summary_messages(info)
+    result = _ask(messages)
+
+    return f"PR summary result: {result}"
 
 def _generate_summary_messages(info: PRInfo) -> List[Message]:
     message = Message(Role.USER, f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}")

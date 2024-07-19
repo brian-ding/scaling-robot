@@ -1,14 +1,14 @@
 from github import Github
 from github import Auth
-
-from gh.pr_info import PRInfo
+from pr_info import PRInfo
+import requests
 
 # 获取 Pull Request 的基本信息
 def get_pr_info(repo, pr_number, github_token):
 
     repoHandler = github_login(github_token, repo)
 
-    pr_info = PRInfo(repo, pr_number)
+    pr_info = PRInfo(repo, pr_number,"","","")
 
     pullRequest = repoHandler.get_pull(pr_number)
 
@@ -16,7 +16,7 @@ def get_pr_info(repo, pr_number, github_token):
 
     pr_info.title = pullRequest.title
 
-    pr_info.diff = pullRequest.diff_url
+    pr_info.diff = read_url_data(pullRequest.diff_url)
 
     return pr_info
 
@@ -50,3 +50,10 @@ def comment_on_pr(repo, pr_number, github_token,comments):
     pullRequest = repoHandler.get_pull(pr_number)
     pullRequest.create_issue_comment(comments)
     return "comment success."
+
+
+ 
+def read_url_data(url):
+    response = requests.get(url)
+    data = response.text
+    return data

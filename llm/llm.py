@@ -1,5 +1,11 @@
 # This is llm/llm.py
-def summary_pr_info(info):
+import os
+import requests
+from typing import List
+from gh.pr_info import PRInfo
+from ._message import Message, Role
+
+def summarize_pr_info(info) -> str:
     """
     Synnart the PR information and return a string.
 
@@ -10,7 +16,14 @@ def summary_pr_info(info):
     str: A result string after summarizing the PR info.
     """
 
-    return f"PR summary result: {info.title} by {info.author}"
+    messages = _generate_summary_messages(info)
+    result = _ask(messages)
+
+    return f"PR summary result: {result}"
+
+def _generate_summary_messages(info: PRInfo) -> List[Message]:
+    message = Message(Role.USER, f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}")
+    return [message]
 
 def review_pr_code(code):
     """
@@ -24,3 +37,30 @@ def review_pr_code(code):
     """
 
     return f"PR review result: {code.filesCount}"
+
+
+def _ask(messages: List[Message]) -> str:
+    """
+    Ask llm a question and return an answer.
+
+    Parameters:
+    messages (List[Message]): The chat history including the new question.
+
+    Returns:
+    str: An answer from the llm.
+    """
+
+    # Replace with the actual URL of the API
+    llm_host = os.getenv('LLM_HOST')
+    url = f"{llm_host}/api/chat"
+
+    payload = {
+        "model": "llama3:8b",
+        "messages": [message.to_dict() for message in messages],
+        "stream": False
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.request("POST", url, json=payload, headers=headers)
+
+    return response.text

@@ -1,4 +1,5 @@
 # This is llm/llm.py
+import os
 import requests
 from typing import List
 from ._message import Message
@@ -42,8 +43,8 @@ def _ask(messages: List[Message]) -> str:
     """
 
     # Replace with the actual URL of the API
-
-    url = "http://10.114.27.220:11435/api/chat"
+    llm_host = os.getenv('LLM_HOST')
+    url = f"{llm_host}/api/chat"
 
     payload = {
         "model": "llama3:8b",

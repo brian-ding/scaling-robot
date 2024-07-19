@@ -2,34 +2,38 @@ import click
 from gh.ghapi import get_pr_info
 from gh.ghapi import get_pr_files
 from gh.ghapi import comment_on_pr
-from llm.llm import review_pr_code
+from llm.llm import review_pr_code, summary_pr_info
+
 
 @click.group()
 def cli():
     pass
 
+
 @cli.command()
-@click.option('-r', '--repo-name', required=True, help='The Repo to review')
-@click.option('-n', '--pr-num', required=True, type=int, help='The PR number')
-@click.option('--token', envvar='GH_TOKEN', help='Github token')
-def summary(repo_name,pr_num,token):
+@click.option("-r", "--repo-name", required=True, help="The Repo to review")
+@click.option("-n", "--pr-num", required=True, type=int, help="The PR number")
+@click.option("--token", envvar="GH_TOKEN", help="Github token")
+def summary(repo_name, pr_num, token):
     """Summarize a PR"""
-    get_pr_info(repo_name,pr_num,token)
-    
+    pr_info = get_pr_info(repo_name, pr_num, token)
+    summary_result = summary_pr_info(pr_info)
+    comment_on_pr(repo_name, pr_num, token, summary_result)
+
+
 @cli.command()
-@click.option('-r', '--repo-name', required=True, help='The Repo to review')
-@click.option('-n', '--pr-num', required=True, type=int, help='The PR number')
-@click.option('--token', envvar='GH_TOKEN', help='Github token')
-def review(repo_name,pr_num,token):
+@click.option("-r", "--repo-name", required=True, help="The Repo to review")
+@click.option("-n", "--pr-num", required=True, type=int, help="The PR number")
+@click.option("--token", envvar="GH_TOKEN", help="Github token")
+def review(repo_name, pr_num, token):
     """Review a PR"""
-    click.echo(f"Review {repo_name}/{pr_num}/{token}")
     # Get the PR code files
     # url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files"
-    pr_files = get_pr_files(repo_name,pr_num,token)
+    pr_files = get_pr_files(repo_name, pr_num, token)
     for pr_file in pr_files:
-        filename = pr_file['filename']
+        filename = pr_file["filename"]
         click.echo(f"Review file: {filename}")
-        patch = pr_file['patch']
+        patch = pr_file["patch"]
         for chunk in split_code_into_chunks(patch):
             review_response = review_pr_code(chunk)
             comment = f"**Review for {filename} (chunk):**\n\n{review_response}"
@@ -44,9 +48,10 @@ def split_code_into_chunks(code, chunk_size=500):
     :param code: PR code patch
     :param chunk_size:  Chunk size
     """
-    lines = code.split('\n')
+    lines = code.split("\n")
     for i in range(0, len(lines), chunk_size):
-        yield '\n'.join(lines[i:i + chunk_size])
+        yield "\n".join(lines[i : i + chunk_size])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cli()

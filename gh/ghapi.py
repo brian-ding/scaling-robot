@@ -1,6 +1,6 @@
 from github import Github
 from github import Auth
-from pr_info import PRInfo
+from gh.pr_info import PRInfo
 import requests
 
 # 获取 Pull Request 的基本信息

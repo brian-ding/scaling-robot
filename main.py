@@ -2,7 +2,7 @@ import click
 from gh.ghapi import get_pr_info
 from gh.ghapi import get_pr_files
 from gh.ghapi import comment_on_pr
-from llm.llm import review_pr_code, summary_pr_info
+from llm.llm import review_pr_code, summarize_pr_info
 
 
 @click.group()
@@ -17,7 +17,7 @@ def cli():
 def summary(repo_name, pr_num, token):
     """Summarize a PR"""
     pr_info = get_pr_info(repo_name, pr_num, token)
-    summary_result = summary_pr_info(pr_info)
+    summary_result = summarize_pr_info(pr_info)
     comment_on_pr(repo_name, pr_num, token, summary_result)
 
 

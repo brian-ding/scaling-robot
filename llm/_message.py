@@ -1,8 +1,8 @@
 from enum import Enum
 
 class Role(Enum):
-    USER = 1
-    ASSISTANT = 2
+    USER = "user"
+    ASSISTANT = "assistant"
 
 class Message:
     def __init__(self, role: Role, content: str):

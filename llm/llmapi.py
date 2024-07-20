@@ -59,7 +59,7 @@ def review_pr_code(info: PRInfo):
     result = _ask(messages)
     response_content = json.loads(result)['message']['content']
     response_json = json.loads(response_content)
-    return f"PR code review result: {response_json}"
+    return response_json
 
 
 def _ask(messages: List[Message]) -> str:

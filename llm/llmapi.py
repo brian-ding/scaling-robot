@@ -80,7 +80,7 @@ def _ask(messages: List[Message]) -> str:
 
     payload = {
         # "model": "llama3:8b",
-        "model": "llama3",
+        "model": "llama3" if 'localhost' in llm_host else "llama3:8b",
         "messages": [message.to_dict() for message in messages],
         "stream": False
     }

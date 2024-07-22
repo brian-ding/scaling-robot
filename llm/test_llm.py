@@ -45,7 +45,7 @@ class TestLlm(unittest.TestCase):
         messages = [Message(Role.USER, "fake content")]
         url = f"{self.llm_host}/api/chat"
         payload = {
-            "model": "llama3",
+            "model": "llama3" if 'localhost' in self.llm_host else "llama3:8b",
             # The name is llama3 for the local installation
             # "model": "llama3:8b",
             "messages": [message.to_dict() for message in messages],

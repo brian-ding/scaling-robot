@@ -25,8 +25,10 @@ def summarize_pr_info(info) -> str:
 
 
 def _generate_summary_messages(info: PRInfo) -> List[Message]:
-    message = Message(Role.USER,
-                      f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}")
+    message = Message(
+        Role.USER,
+        f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}",
+    )
     return [message]
 
 
@@ -38,26 +40,32 @@ def _generate_code_review_messages(info: PRInfo) -> List[Message]:
     should not include any notes or explanations.
         You must use the following JSON schema to format your answer :
        """
-    with open('code_review_output_schema.json', 'r') as file:
-        prompt = f"{prompt}\n{file}"
 
-    message = Message(Role.USER, f"\n{prompt}\n The PR diff content: ---\n {info.diff} \n---")
+    code_review_output_schema_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "code_review_output_schema.json"
+    )
+    with open(code_review_output_schema_path, "r") as file:
+        prompt = f"{prompt}\n{file.read()}"
+
+    message = Message(
+        Role.USER, f"\n{prompt}\n The PR diff content: ---\n {info.diff} \n---"
+    )
     return [message]
 
 
 def review_pr_code(info: PRInfo):
     """
-     Review the PR code and return a string.
+    Review the PR code and return a string.
 
-     Parameters:
-     code (PRCode): The PRCode object containing PR code.
+    Parameters:
+    code (PRCode): The PRCode object containing PR code.
 
-     Returns:
-     str: A result string after reviewing the PR code.
-     """
+    Returns:
+    str: A result string after reviewing the PR code.
+    """
     messages = _generate_code_review_messages(info)
     result = _ask(messages)
-    response_content = json.loads(result)['message']['content']
+    response_content = json.loads(result)["message"]["content"]
     response_json = json.loads(response_content)
     return response_json
 
@@ -74,15 +82,15 @@ def _ask(messages: List[Message]) -> str:
     """
 
     # Replace with the actual URL of the API
-    llm_host = os.getenv('LLM_HOST', 'http://localhost:11434')
+    llm_host = os.getenv("LLM_HOST", "http://localhost:11434")
 
     url = f"{llm_host}/api/chat"
 
     payload = {
         # "model": "llama3:8b",
-        "model": "llama3" if 'localhost' in llm_host else "llama3:8b",
+        "model": "llama3" if "localhost" in llm_host else "llama3:8b",
         "messages": [message.to_dict() for message in messages],
-        "stream": False
+        "stream": False,
     }
     headers = {"Content-Type": "application/json"}
 

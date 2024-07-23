@@ -7,7 +7,7 @@
       "type": "string",
       "description": "Summary of the PR in 2-3 sentences."
     },
-    "type": {
+    "pr_type": {
       "type": "string",
       "enum": [
         "Feature",
@@ -46,7 +46,7 @@
   },
   "required": [
     "summary",
-    "type",
+    "pr_type",
     "comments"
   ]
 }

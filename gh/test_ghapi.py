@@ -1,5 +1,12 @@
 import unittest
-from ghapi import get_pr_info, github_login, github_user_login, get_pr_files, comment_on_pr, read_url_data
+from gh.ghapi import (
+    get_pr_info,
+    github_login,
+    github_user_login,
+    get_pr_files,
+    comment_on_pr,
+    read_url_data,
+)
 from gh.pr_info import PRInfo
 import os
 
@@ -8,12 +15,18 @@ class TestGhapi(unittest.TestCase):
 
     def setUp(self):
         # Set up the repository information and GitHub tokens needed for testing
-        self.repo = os.getenv('GITHUB_REPO', 'brian-ding/glowing-train')  # Replace with your repo
-        self.pr_number = int(os.getenv('GITHUB_PR_NUMBER', 3))  # Replace with actual PR number
-        self.github_token = os.getenv('GITHUB_TOKEN',
-                                      'your_token')  # Replace with your GitHub token
-        self.github_user_token = os.getenv('GITHUB_TOKEN',
-                                           'your_token')  # Replace with your GitHub user token
+        self.repo = os.getenv(
+            "GITHUB_REPO", "brian-ding/glowing-train"
+        )  # Replace with your repo
+        self.pr_number = int(
+            os.getenv("GITHUB_PR_NUMBER", 3)
+        )  # Replace with actual PR number
+        self.github_token = os.getenv(
+            "GITHUB_TOKEN", "your_token"
+        )  # Replace with your GitHub token
+        self.github_user_token = os.getenv(
+            "GITHUB_TOKEN", "your_token"
+        )  # Replace with your GitHub user token
 
     def test_get_pr_info(self):
         # Test fetching PR information
@@ -27,13 +40,13 @@ class TestGhapi(unittest.TestCase):
         # Test logging into GitHub using the GitHub token
         result = github_login(self.github_token, self.repo)
         self.assertIsNotNone(result)
-        self.assertTrue(hasattr(result, 'get_pull'))
+        self.assertTrue(hasattr(result, "get_pull"))
 
     def test_github_user_login(self):
         # Test logging into GitHub using the GitHub user token
         result = github_user_login(self.github_user_token, self.repo)
         self.assertIsNotNone(result)
-        self.assertTrue(hasattr(result, 'get_pull'))
+        self.assertTrue(hasattr(result, "get_pull"))
 
     def test_get_pr_files(self):
         # Test fetching files from a PR
@@ -53,5 +66,5 @@ class TestGhapi(unittest.TestCase):
         self.assertTrue(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

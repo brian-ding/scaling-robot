@@ -85,7 +85,7 @@ def _ask(messages: List[dict[str, str]]) -> str:
     """
     isUsingAzureOpenAI = os.getenv("AZURE_OPENAI_ENABLED", "False")
     model = ""
-    if isUsingAzureOpenAI == "True":
+    if isUsingAzureOpenAI.lower() == "true":
         model = "azure/GPT-4O-Chatbot"
         litellm.azure_key = os.getenv("AZURE_OPENAI_KEY", "azure_key")
         litellm.api_version = os.getenv("AZURE_OPENAI_VERSION", "api_version")

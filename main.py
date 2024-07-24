@@ -28,8 +28,8 @@ def review(repo_name, pr_num, token):
     """Review a PR"""
     pr_info = get_pr_info(repo_name, pr_num, token)
     code_review_result = review_pr_code(pr_info)
-    feedBack = f"It's a {code_review_result.pr_type} PR, {code_review_result.summary}"
-    comment_on_pr(repo_name, pr_num, token, feedBack)
+    feed_back = f"It's a {code_review_result.pr_type} PR, {code_review_result.summary}"
+    comment_on_pr(repo_name, pr_num, token, feed_back)
     for inline_comment in code_review_result.comments:
         comment_on_pr_by_line(
             repo_name,
@@ -39,7 +39,6 @@ def review(repo_name, pr_num, token):
             inline_comment.relevant_file,
             inline_comment.line_num,
         )
-    pass
 
 
 if __name__ == "__main__":

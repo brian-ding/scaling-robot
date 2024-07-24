@@ -84,9 +84,8 @@ def _ask(messages: List[dict[str, str]]) -> str:
     str: An answer from the llm.
     """
     litellm.set_verbose = True
-    isUsingAzureOpenAI = os.getenv("AZURE_OPENAI_ENABLED", "False")
-    model = ""
-    if isUsingAzureOpenAI.lower() == "true":
+    is_using_azure_open_ai = os.getenv("AZURE_OPENAI_ENABLED", "False")
+    if is_using_azure_open_ai.lower() == "true":
         model = "azure/GPT-4O-Chatbot"
         litellm.azure_key = os.getenv("AZURE_OPENAI_KEY", "azure_key")
         litellm.api_version = os.getenv("AZURE_OPENAI_VERSION", "api_version")

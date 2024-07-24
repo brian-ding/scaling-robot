@@ -93,7 +93,7 @@ def _ask(messages: List[dict[str, str]]) -> str:
         litellm.api_base = os.getenv("AZURE_OPENAI_URL", "api_base")
     else:
         llm_host =  os.getenv("LLM_HOST", "http://localhost:11434")
-        model =  "llama3" if "localhost" in llm_host else "llama3:8b"
+        model =  "ollama/llama3" if "localhost" in llm_host else "ollama/llama3:8b"
         litellm.api_base = llm_host
 
     response = completion(model, messages, stream=False)

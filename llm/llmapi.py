@@ -1,10 +1,11 @@
 # This is llm/llmapi.py
 import os
-import requests
 from typing import List
 from gh.pr_info import PRInfo
-from llm._message import Message, Role
+from litellm import completion, litellm
 import json
+
+from llm.code_review_result import CodeReviewResult
 
 
 def summarize_pr_info(info) -> str:
@@ -19,21 +20,22 @@ def summarize_pr_info(info) -> str:
     """
 
     messages = _generate_summary_messages(info)
-    result = _ask(messages)
+    response_content = _ask(messages)
 
-    return f"PR summary result: {result}"
-
-
-def _generate_summary_messages(info: PRInfo) -> List[Message]:
-    message = Message(
-        Role.USER,
-        f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}",
-    )
-    return [message]
+    return f"PR summary result: {response_content}"
 
 
-def _generate_code_review_messages(info: PRInfo) -> List[Message]:
-    prompt = """You are PR-Reviewer, a language model designed to review git pull requests.
+def _generate_summary_messages(info: PRInfo) -> List[dict[str, str]]:
+    user_content = f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}"
+    messages = [
+        {"role": "user", "content": user_content},
+    ]
+
+    return messages
+
+
+def _generate_code_review_messages(info: PRInfo) -> List[dict[str, str]]:
+    system_prompt = """You are PR-Reviewer, a language model designed to review git pull requests.
         Your task is to provide constructive and concise feedback for the PR, and also provide meaningful code suggestions.
         The review should focus on new code added in the PR (lines starting with '+'), and not on code that already existed in the file (lines starting with '-', or without prefix).
          The output has to be a valid JSON object which can be parsed as is. Your response 
@@ -45,15 +47,17 @@ def _generate_code_review_messages(info: PRInfo) -> List[Message]:
         os.path.dirname(os.path.abspath(__file__)), "code_review_output_schema.json"
     )
     with open(code_review_output_schema_path, "r") as file:
-        prompt = f"{prompt}\n{file.read()}"
+        system_prompt = f"{system_prompt}\n{file.read()}"
 
-    message = Message(
-        Role.USER, f"\n{prompt}\n The PR diff content: ---\n {info.diff} \n---"
-    )
-    return [message]
+    user_content = f"The PR diff content: ---\n {info.diff} \n---"
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_content},
+    ]
+    return messages
 
 
-def review_pr_code(info: PRInfo):
+def review_pr_code(info: PRInfo) -> CodeReviewResult:
     """
     Review the PR code and return a string.
 
@@ -64,13 +68,12 @@ def review_pr_code(info: PRInfo):
     str: A result string after reviewing the PR code.
     """
     messages = _generate_code_review_messages(info)
-    result = _ask(messages)
-    response_content = json.loads(result)["message"]["content"]
+    response_content = _ask(messages)
     response_json = json.loads(response_content)
-    return response_json
+    return CodeReviewResult(**response_json)
 
 
-def _ask(messages: List[Message]) -> str:
+def _ask(messages: List[dict[str, str]]) -> str:
     """
     Ask llm a question and return an answer.
 
@@ -80,20 +83,20 @@ def _ask(messages: List[Message]) -> str:
     Returns:
     str: An answer from the llm.
     """
+    litellm.set_verbose = True
+    isUsingAzureOpenAI = os.getenv("AZURE_OPENAI_ENABLED", "False")
+    model = ""
+    if isUsingAzureOpenAI.lower() == "true":
+        model = "azure/GPT-4O-Chatbot"
+        litellm.azure_key = os.getenv("AZURE_OPENAI_KEY", "azure_key")
+        litellm.api_version = os.getenv("AZURE_OPENAI_VERSION", "api_version")
+        litellm.api_base = os.getenv("AZURE_OPENAI_URL", "api_base")
+    else:
+        model = "llama3"
+        litellm.api_base = os.getenv("LLM_HOST", "http://localhost:11434")
 
-    # Replace with the actual URL of the API
-    llm_host = os.getenv("LLM_HOST", "http://localhost:11434")
+    response = completion(model, messages, stream=False)
+    print(response)
+    res_content = response["choices"][0]["message"]["content"]
 
-    url = f"{llm_host}/api/chat"
-
-    payload = {
-        # "model": "llama3:8b",
-        "model": "llama3" if "localhost" in llm_host else "llama3:8b",
-        "messages": [message.to_dict() for message in messages],
-        "stream": False,
-    }
-    headers = {"Content-Type": "application/json"}
-
-    response = requests.request("POST", url, json=payload, headers=headers)
-
-    return response.text
+    return res_content

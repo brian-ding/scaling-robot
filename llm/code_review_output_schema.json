@@ -7,7 +7,7 @@
       "type": "string",
       "description": "Summary of the PR in 2-3 sentences."
     },
-    "type": {
+    "pr_type": {
       "type": "string",
       "enum": [
         "Feature",
@@ -29,7 +29,7 @@
           "line_num": {
             "type": "integer",
             "minimum": 0,
-            "description": "A single code line taken from the relevant file, to which the suggestion applies."
+            "description": "a single code line taken from the relevant file, to which the suggestion applies. The code line should start with a '+'.Make sure to output the line exactly as it appears in the relevant file"
           },
           "comment": {
             "type": "string",
@@ -46,7 +46,7 @@
   },
   "required": [
     "summary",
-    "type",
+    "pr_type",
     "comments"
   ]
 }

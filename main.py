@@ -1,6 +1,6 @@
 import click
 from gh.ghapi import get_pr_info
-from gh.ghapi import comment_on_pr
+from gh.ghapi import comment_on_pr, comment_on_pr_by_line
 from llm.llmapi import review_pr_code, summarize_pr_info
 
 
@@ -26,6 +26,19 @@ def summary(repo_name, pr_num, token):
 @click.option("--token", envvar="GH_TOKEN", help="Github token")
 def review(repo_name, pr_num, token):
     """Review a PR"""
+    pr_info = get_pr_info(repo_name, pr_num, token)
+    code_review_result = review_pr_code(pr_info)
+    feedBack = f"It's a {code_review_result.pr_type} PR, {code_review_result.summary}"
+    comment_on_pr(repo_name, pr_num, token, feedBack)
+    for inline_comment in code_review_result.comments:
+        comment_on_pr_by_line(
+            repo_name,
+            pr_num,
+            token,
+            inline_comment.comment,
+            inline_comment.relevant_file,
+            inline_comment.line_num,
+        )
     pass
 
 

@@ -83,6 +83,7 @@ def _ask(messages: List[dict[str, str]]) -> str:
     Returns:
     str: An answer from the llm.
     """
+    litellm.set_verbose = True
     isUsingAzureOpenAI = os.getenv("AZURE_OPENAI_ENABLED", "False")
     model = ""
     if isUsingAzureOpenAI.lower() == "true":

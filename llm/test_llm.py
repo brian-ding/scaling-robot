@@ -51,13 +51,13 @@ class TestLlm(unittest.TestCase):
         self.assertTrue(result.comments[0].comment)
 
     def test_ask(self):
-        messgaes = [
+        messages = [
             {
                 "role": "user",
                 "content": f"Can you summarize the PR based on the following info?\nthe title is: {self.pr_info.title}\nand the description is: {self.pr_info.description}",
             },
         ]
-        result = _ask(messgaes)
+        result = _ask(messages)
         self.assertTrue(result)
 
         # # Test asking the LLM a question

@@ -34,6 +34,7 @@ def _generate_summary_messages(info: PRInfo) -> List[dict[str, str]]:
 
     return messages
 
+
 def _getGuideline(path: str) -> str:
     guildeline_content = ""
     with open(path, "r") as file:
@@ -59,9 +60,15 @@ def _generate_code_review_messages(info: PRInfo) -> List[dict[str, str]]:
     user_content = f"The PR diff content: ---\n {info.diff} \n---"
     messages = [
         {"role": "user", "content": system_prompt},
-        {"role": "assistant", "content": "Sure, I will provide feedback, and suggestions based on the contribution guideline"},
+        {
+            "role": "assistant",
+            "content": "Sure, I will provide feedback, and suggestions based on the contribution guideline",
+        },
         {"role": "user", "content": schema_prompt},
-        {"role": "assistant", "content": "Sure, the output will follow the JSON schema"},
+        {
+            "role": "assistant",
+            "content": "Sure, the output will follow the JSON schema and the output can be deserialized to JSON object directly",
+        },
         {"role": "user", "content": user_content},
     ]
     return messages
@@ -101,8 +108,8 @@ def _ask(messages: List[dict[str, str]]) -> str:
         litellm.api_version = os.getenv("AZURE_OPENAI_VERSION", "api_version")
         litellm.api_base = os.getenv("AZURE_OPENAI_URL", "api_base")
     else:
-        llm_host =  os.getenv("LLM_HOST", "http://localhost:11434")
-        model =  "llama3" if "localhost" in llm_host else "llama3:8b"
+        llm_host = os.getenv("LLM_HOST", "http://localhost:11434")
+        model = "llama3" if "localhost" in llm_host else "llama3:8b"
         litellm.api_base = llm_host
 
     response = completion(model, messages, stream=False)

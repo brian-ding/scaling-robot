@@ -58,7 +58,7 @@ def _generate_code_review_messages(info: PRInfo) -> List[dict[str, str]]:
 
     user_content = f"The PR diff content: ---\n {info.diff} \n---"
     messages = [
-        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": system_prompt},
         {"role": "assistant", "content": "Sure, I will provide feedback, and suggestions based on the contribution guideline"},
         {"role": "user", "content": schema_prompt},
         {"role": "assistant", "content": "Sure, the output will follow the JSON schema"},

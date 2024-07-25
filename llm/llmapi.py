@@ -78,7 +78,12 @@ def review_pr_code(info: PRInfo) -> CodeReviewResult:
     """
     messages = _generate_code_review_messages(info)
     response_content = _ask(messages)
-    response_json = json.loads(response_content)
+    if "$schema" in response_content:
+        response_with_schema_json = json.loads(response_content)
+        response_json = response_with_schema_json["properties"]
+    else:
+        response_json = json.loads(response_content)
+
     return CodeReviewResult(**response_json)
 
 

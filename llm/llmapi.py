@@ -43,23 +43,25 @@ def _getGuideline(path: str) -> str:
 
 
 def _generate_code_review_messages(info: PRInfo) -> List[dict[str, str]]:
-    system_prompt = """You are PR-Reviewer, a language model designed to review git pull requests.
-        Your task is to provide constructive and concise feedback for the PR, and also provide meaningful code suggestions.
-        The review should focus on new code added in the PR (lines starting with '+'), and not on code that already existed in the file (lines starting with '-', or without prefix).
-         The output has to be a valid JSON object which can be parsed as is. Your response 
-    should not include any notes or explanations.
+    guideline_content = _getGuideline(info.guideline)
+    system_prompt = f"You are PR-Reviewer, a language model designed to review git pull requests. Your task is to provide constructive and concise feedback for the PR, provide meaningful code suggestions, and check if the code breaks the rules specified in the guideline here:\n{guideline_content}"
+    schema_prompt = """The review should focus on new code added in the PR (lines starting with '+'), and not on code that already existed in the file (lines starting with '-', or without prefix).
+        The output has to be a valid JSON object which can be parsed as is. Your response should not include any notes or explanations.
         You must use the following JSON schema to format your answer :
-       """
+        """
 
     code_review_output_schema_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "code_review_output_schema.json"
     )
     with open(code_review_output_schema_path, "r") as file:
-        system_prompt = f"{system_prompt}\n{file.read()}"
+        schema_prompt = f"{schema_prompt}\n{file.read()}"
 
     user_content = f"The PR diff content: ---\n {info.diff} \n---"
     messages = [
         {"role": "system", "content": system_prompt},
+        {"role": "assistant", "content": "Sure, I will provide feedback, and suggestions based on the contribution guideline"},
+        {"role": "user", "content": schema_prompt},
+        {"role": "assistant", "content": "Sure, the output will follow the JSON schema"},
         {"role": "user", "content": user_content},
     ]
     return messages

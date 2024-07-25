@@ -26,15 +26,20 @@ def summarize_pr_info(info) -> str:
 
 
 def _generate_summary_messages(info: PRInfo) -> List[dict[str, str]]:
-    guildeline_content = ""
-    with open(info.guideline, "r") as file:
-        guildeline_content = file.read()
+    guildeline_content = _getGuideline(info.guideline)
     user_content = f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}\nAnd in a new paragraph, point out in detail, if the PR does not follow the PR section in the guideline below:\n{guildeline_content}"
     messages = [
         {"role": "user", "content": user_content},
     ]
 
     return messages
+
+def _getGuideline(path: str) -> str:
+    guildeline_content = ""
+    with open(path, "r") as file:
+        guildeline_content = file.read()
+
+    return guildeline_content
 
 
 def _generate_code_review_messages(info: PRInfo) -> List[dict[str, str]]:

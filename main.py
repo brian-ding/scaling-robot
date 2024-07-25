@@ -13,7 +13,9 @@ def cli():
 @click.option("-r", "--repo-name", required=True, help="The Repo to review")
 @click.option("-n", "--pr-num", required=True, type=int, help="The PR number")
 @click.option("--token", envvar="GH_TOKEN", help="Github token")
-@click.option("-g", "--guideline", required=False, type=str, help="The Path of guideline")
+@click.option(
+    "-g", "--guideline", required=False, type=str, help="The Path of guideline"
+)
 def summary(repo_name, pr_num, token, guideline):
     """Summarize a PR"""
     pr_info = get_pr_info(repo_name, pr_num, token, guideline)
@@ -25,7 +27,9 @@ def summary(repo_name, pr_num, token, guideline):
 @click.option("-r", "--repo-name", required=True, help="The Repo to review")
 @click.option("-n", "--pr-num", required=True, type=int, help="The PR number")
 @click.option("--token", envvar="GH_TOKEN", help="Github token")
-@click.option("-g", "--guideline", required=False, type=str, help="The Path of guideline")
+@click.option(
+    "-g", "--guideline", required=False, type=str, help="The Path of guideline"
+)
 def review(repo_name, pr_num, token, guideline):
     """Review a PR"""
     pr_info = get_pr_info(repo_name, pr_num, token, guideline)
@@ -33,6 +37,7 @@ def review(repo_name, pr_num, token, guideline):
     feed_back = f"It's a {code_review_result.pr_type} PR, {code_review_result.summary}"
     comment_on_pr(repo_name, pr_num, token, feed_back)
     for inline_comment in code_review_result.comments:
+        print(f"line_num_{inline_comment.line_num};{inline_comment.comment}")
         comment_on_pr_by_line(
             repo_name,
             pr_num,

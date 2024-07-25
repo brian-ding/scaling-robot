@@ -47,7 +47,7 @@ def _generate_code_review_messages(info: PRInfo) -> List[dict[str, str]]:
     guideline_content = _getGuideline(info.guideline)
     system_prompt = f"You are PR-Reviewer, a language model designed to review git pull requests. Your task is to provide constructive and concise feedback for the PR, provide meaningful code suggestions, and check if the code breaks the rules specified in the guideline here:\n{guideline_content}"
     schema_prompt = """The review should focus on new code added in the PR (lines starting with '+'), and not on code that already existed in the file (lines starting with '-', or without prefix).
-The output has to be a valid JSON object which can be parsed as is. Your response should not include any notes or explanations and mustn't with any markdown format. Ensure all points from the contribution guidelines are considered.
+The output has to be a valid JSON object which can be parsed as is. Your response should not include any notes or explanations and mustn't with any markdown format.
 You must use the following JSON schema to format your answer:
 """
 

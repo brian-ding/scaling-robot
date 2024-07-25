@@ -1,12 +1,13 @@
 # This is gh/pr_info.py
 
 class PRInfo:
-    def __init__(self, repo, prNumber, title, description, diff):
+    def __init__(self, repo, prNumber, title, description, diff, guideline):
         self._repo = repo
         self._prNumber = prNumber
         self._title = title
         self._description = description
         self._diff = diff
+        self._guideline = guideline
 
     # Get & Set for Repo info
     @property
@@ -43,7 +44,6 @@ class PRInfo:
     @description.setter
     def description(self, description):
         self._description = description
-        
 
     # Get & Set for change info
     @property
@@ -53,3 +53,7 @@ class PRInfo:
     @diff.setter
     def diff(self, diff):
         self._diff = diff
+
+    @property
+    def guideline(self):
+        return self._guideline

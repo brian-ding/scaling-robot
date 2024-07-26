@@ -4,11 +4,11 @@ from gh.pr_info import PRInfo
 import requests
 
 # 获取 Pull Request 的基本信息
-def get_pr_info(repo, pr_number, github_token):
+def get_pr_info(repo, pr_number, github_token, guideline):
 
     repoHandler = github_login(github_token, repo)
 
-    pr_info = PRInfo(repo, pr_number,"","","")
+    pr_info = PRInfo(repo, pr_number, "", "", "", guideline)
 
     pullRequest = repoHandler.get_pull(pr_number)
 

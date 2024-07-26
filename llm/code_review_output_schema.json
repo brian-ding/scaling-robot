@@ -29,7 +29,7 @@
           "line_num": {
             "type": "integer",
             "minimum": 0,
-            "description": "a single code line taken from the relevant file, to which the suggestion applies. The code line should start with a '+'.Make sure to output the line exactly as it appears in the relevant file"
+            "description": "a single code line taken from the relevant file, to which the suggestion applies. this value must be exactly and be able to be used as position field in github create_inline_comment api"
           },
           "comment": {
             "type": "string",

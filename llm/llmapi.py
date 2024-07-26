@@ -26,7 +26,8 @@ def summarize_pr_info(info) -> str:
 
 
 def _generate_summary_messages(info: PRInfo) -> List[dict[str, str]]:
-    user_content = f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}"
+    guildeline_content = _getGuideline(info.guideline)
+    user_content = f"Can you summarize the PR based on the following info?\nthe title is: {info.title}\nand the description is: {info.description}\nAnd in a new paragraph, point out in detail, if the PR does not follow the PR section in the guideline below:\n{guildeline_content}"
     messages = [
         {"role": "user", "content": user_content},
     ]
@@ -34,24 +35,32 @@ def _generate_summary_messages(info: PRInfo) -> List[dict[str, str]]:
     return messages
 
 
+def _getGuideline(path: str) -> str:
+    guildeline_content = ""
+    with open(path, "r") as file:
+        guildeline_content = file.read()
+
+    return guildeline_content
+
+
 def _generate_code_review_messages(info: PRInfo) -> List[dict[str, str]]:
-    system_prompt = """You are PR-Reviewer, a language model designed to review git pull requests.
-        Your task is to provide constructive and concise feedback for the PR, and also provide meaningful code suggestions.
-        The review should focus on new code added in the PR (lines starting with '+'), and not on code that already existed in the file (lines starting with '-', or without prefix).
-         The output has to be a valid JSON object which can be parsed as is. Your response 
-    should not include any notes or explanations.
-        You must use the following JSON schema to format your answer :
-       """
+    guideline_content = _getGuideline(info.guideline)
+    system_prompt = f"You are PR-Reviewer, a language model designed to review git pull requests. Your task is to provide constructive and concise feedback for the PR, provide meaningful code suggestions, and check if the code breaks the rules specified in the guideline here:\n{guideline_content} \n Your review should be concise and only highlight critical points, while ensuring all guidelines are strictly followed."
+    schema_prompt = """The review should focus on new code added in the PR (lines starting with '+'), and not on code that already existed in the file (lines starting with '-', or without prefix).
+The output has to be a valid JSON object which can be parsed as is. Your response should not include any notes or explanations and mustn't with any markdown format.
+You must use the following JSON schema to format your answer:
+"""
 
     code_review_output_schema_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "code_review_output_schema.json"
     )
     with open(code_review_output_schema_path, "r") as file:
-        system_prompt = f"{system_prompt}\n{file.read()}"
+        schema_prompt = f"{schema_prompt}\n{file.read()}"
 
-    user_content = f"The PR diff content: ---\n {info.diff} \n---"
+    user_content = f"The PR diff content: ---\n{info.diff}\n---"
     messages = [
         {"role": "system", "content": system_prompt},
+        {"role": "user", "content": schema_prompt},
         {"role": "user", "content": user_content},
     ]
     return messages
@@ -69,7 +78,12 @@ def review_pr_code(info: PRInfo) -> CodeReviewResult:
     """
     messages = _generate_code_review_messages(info)
     response_content = _ask(messages)
-    response_json = json.loads(response_content)
+    if "$schema" in response_content:
+        response_with_schema_json = json.loads(response_content)
+        response_json = response_with_schema_json["properties"]
+    else:
+        response_json = json.loads(response_content)
+
     return CodeReviewResult(**response_json)
 
 
@@ -91,8 +105,8 @@ def _ask(messages: List[dict[str, str]]) -> str:
         litellm.api_version = os.getenv("AZURE_OPENAI_VERSION", "api_version")
         litellm.api_base = os.getenv("AZURE_OPENAI_URL", "api_base")
     else:
-        llm_host =  os.getenv("LLM_HOST", "http://localhost:11434")
-        model =  "llama3" if "localhost" in llm_host else "llama3:8b"
+        llm_host = os.getenv("LLM_HOST", "http://localhost:11434")
+        model = "llama3" if "localhost" in llm_host else "llama3:8b"
         litellm.api_base = llm_host
 
     response = completion(model, messages, stream=False)

@@ -60,8 +60,7 @@ You must use the following JSON schema to format your answer:
     user_content = f"The PR diff content: ---\n{info.diff}\n---"
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": schema_prompt},
-        {"role": "user", "content": user_content},
+        {"role": "user", "content": schema_prompt + "\n" + user_content},
     ]
     return messages
 

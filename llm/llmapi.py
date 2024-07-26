@@ -52,7 +52,7 @@ You must use the following JSON schema to format your answer:
 """
 
     code_review_output_schema_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "code_review_output_schema.json"
+        os.path.dirname(os.path.abspath(__file__)), "code_review_output_schema.md"
     )
     with open(code_review_output_schema_path, "r") as file:
         schema_prompt = f"{schema_prompt}\n{file.read()}"
